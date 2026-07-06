@@ -12,6 +12,8 @@ By extracting these schemas at compile time, `genui_builder` ensures type safety
 
 Since this package is only needed during development to generate code, you must add it to your `dev_dependencies` in your `pubspec.yaml`, alongside `build_runner`.
 
+If you are working inside this Dart workspace, `genui_annotations` will still resolve to the local package in the monorepo. The `^1.0.0` constraint is for compatibility and publishing, not to force pub.dev during workspace development.
+
 ```yaml
 dependencies:
   flutter:
