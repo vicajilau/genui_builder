@@ -488,6 +488,24 @@ abstract class AppLocalizations {
   /// **'Serverpod host is reachable! (Mock WebSocket handshake passed)'**
   String get serverpodHostReachable;
 
+  /// Test result message when serverpod connection succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Successful connection with Serverpod!'**
+  String get serverpodConnectionSuccess;
+
+  /// Test result message when serverpod returns unexpected data
+  ///
+  /// In en, this message translates to:
+  /// **'Error: unexpected response from the server.'**
+  String get serverpodUnexpectedResponse;
+
+  /// Test result message when serverpod connection fails
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error: Could not reach the server. Make sure Serverpod is running at {url}.'**
+  String serverpodConnectionError(String url);
+
   /// Snackbar warning message when clipboard has no text
   ///
   /// In en, this message translates to:

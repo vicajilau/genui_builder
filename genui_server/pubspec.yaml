@@ -1,0 +1,57 @@
+name: genui_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '^3.12.0'
+
+resolution: workspace
+
+dependencies:
+  serverpod: 4.0.0-beta.0
+  genkit: ^0.14.1
+  genkit_google_genai: ^0.2.9
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+
+serverpod:
+  scripts:
+    # Build the Flutter web app and copy it to the server's web directory.
+    # Windows uses xcopy since flutter's --output flag doesn't work there.
+    # See: https://github.com/flutter/flutter/issues/157886
+    flutter_build:
+      windows: >-
+        (if exist web\app rmdir /S /Q web\app)
+        & cd /D ..\example
+        && flutter build web --base-href /
+        && xcopy /E /I /Y build\web ..\genui_server\web\app
+      posix: |
+        cd ../example
+        flutter build web --base-href / --output ../genui_server/web/app
+  
+  # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
+  # by a display alias. The default device is the web server, opening the
+  # machine's default browser when ready. All non-reserved properties are
+  # forwarded to `flutter run`. See the example below:
+  #
+  # Admin:
+  #   path: ../apps/admin_flutter
+  #   displayName: "Admin app"
+  #   auto_launch: true
+  #   device: chrome
+  #   target: lib/main.dart
+  #   web-hostname: 0.0.0.0
+  #   web-port: 8090
+  #   release: true
+  #   pub: false
+  #   dart-define:
+  #     API_URL=https://admin.example.com
+  #     FLAVOR=production
+  flutter_apps:
+    genui:
+      path: ../example
+      displayName: "GenUI Playground example"
+      auto_launch: true
+      target: lib/main.dart

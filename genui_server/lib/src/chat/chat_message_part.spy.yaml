@@ -1,0 +1,3 @@
+class: ChatMessagePart
+fields:
+  text: String

@@ -88,6 +88,8 @@ class GeminiChatController extends ChangeNotifier {
       case ChatMode.serverpod:
         _chatService = ServerpodChatService(
           serverUrl: _settingsService.serverpodUrl,
+          systemInstruction: _buildSystemInstruction,
+          getApiKey: () => _settingsService.apiKey,
         );
         break;
     }

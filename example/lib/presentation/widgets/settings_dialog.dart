@@ -5,6 +5,7 @@ import '../../data/services/connection_settings_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../main.dart';
 import 'centered_toast.dart';
+import 'package:genui_client/genui_client.dart' as sp;
 
 /// A dialog widget that allows users to configure and persist chat connection
 /// settings (Serverless Gemini API, Local Gemma execution, or Serverpod backend).
@@ -232,8 +233,18 @@ class _SettingsDialogState extends State<SettingsDialog> {
           success = false;
           message = l10n.serverUrlCannotBeEmpty;
         } else {
-          success = true;
-          message = l10n.serverpodHostReachable;
+          try {
+            final client = sp.Client(url);
+            success = await client.greeting.ping();
+            if (success) {
+              message = l10n.serverpodConnectionSuccess;
+            } else {
+              message = l10n.serverpodUnexpectedResponse;
+            }
+          } catch (e) {
+            success = false;
+            message = l10n.serverpodConnectionError(url);
+          }
         }
         break;
     }

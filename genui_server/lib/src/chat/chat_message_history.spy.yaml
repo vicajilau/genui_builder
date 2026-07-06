@@ -1,0 +1,4 @@
+class: ChatMessageHistory
+fields:
+  role: String
+  parts: List<ChatMessagePart>

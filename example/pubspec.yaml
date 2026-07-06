@@ -24,6 +24,8 @@ dependencies:
   intl: ^0.20.2
   genkit: ^0.14.1
   genkit_google_genai: ^0.2.9
+  genui_client: any
+  serverpod_client: any
 
 dev_dependencies:
   flutter_test:

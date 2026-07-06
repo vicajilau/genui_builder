@@ -219,6 +219,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Serverpod host is reachable! (Mock WebSocket handshake passed)';
 
   @override
+  String get serverpodConnectionSuccess =>
+      'Successful connection with Serverpod!';
+
+  @override
+  String get serverpodUnexpectedResponse =>
+      'Error: unexpected response from the server.';
+
+  @override
+  String serverpodConnectionError(String url) {
+    return 'Connection error: Could not reach the server. Make sure Serverpod is running at $url.';
+  }
+
+  @override
   String get noTextInClipboard => 'No text found in clipboard';
 
   @override

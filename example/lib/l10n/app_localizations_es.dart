@@ -223,6 +223,18 @@ class AppLocalizationsEs extends AppLocalizations {
       '¡El host de Serverpod es accesible! (Handshake WebSocket simulado superado)';
 
   @override
+  String get serverpodConnectionSuccess => '¡Conexión exitosa con Serverpod!';
+
+  @override
+  String get serverpodUnexpectedResponse =>
+      'Error: respuesta inesperada del servidor.';
+
+  @override
+  String serverpodConnectionError(String url) {
+    return 'Error de conexión: No se pudo contactar al servidor. Asegúrate de que Serverpod esté iniciado en $url.';
+  }
+
+  @override
   String get noTextInClipboard => 'No se encontró texto en el portapapeles';
 
   @override

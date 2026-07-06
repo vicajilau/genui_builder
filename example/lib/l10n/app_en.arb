@@ -290,6 +290,23 @@
   "@serverpodHostReachable": {
     "description": "Test result message when serverpod connection succeeds"
   },
+  "serverpodConnectionSuccess": "Successful connection with Serverpod!",
+  "@serverpodConnectionSuccess": {
+    "description": "Test result message when serverpod connection succeeds"
+  },
+  "serverpodUnexpectedResponse": "Error: unexpected response from the server.",
+  "@serverpodUnexpectedResponse": {
+    "description": "Test result message when serverpod returns unexpected data"
+  },
+  "serverpodConnectionError": "Connection error: Could not reach the server. Make sure Serverpod is running at {url}.",
+  "@serverpodConnectionError": {
+    "description": "Test result message when serverpod connection fails",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "noTextInClipboard": "No text found in clipboard",
   "@noTextInClipboard": {
     "description": "Snackbar warning message when clipboard has no text"
