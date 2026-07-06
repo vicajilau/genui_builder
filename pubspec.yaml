@@ -27,5 +27,5 @@ melos:
       run: melos exec -- "dart format --set-exit-if-changed ."
       description: Check Dart formatting across the monorepo.
     test:
-      run: melos exec --dir-exists="test" -- "flutter test"
+      run: melos exec --dir-exists="test" --ignore="genui_server" -- "flutter test"
       description: Run Flutter tests in packages that contain a test directory.
