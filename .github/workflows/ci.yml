@@ -24,7 +24,7 @@ jobs:
         run: dart pub global activate melos
 
       - name: 📥 Get Dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: 📝 Check Formatting
         run: melos run format

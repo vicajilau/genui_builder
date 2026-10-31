@@ -16,7 +16,7 @@ dependencies:
   genui_annotations: any
   genui: ^0.10.4
   a2ui_core: ^0.1.1
-  json_schema_builder: any
+  json_schema_builder: ^0.1.7
   dio: ^5.9.2
   shared_preferences: ^2.5.5
   crypto: ^3.0.7
@@ -26,7 +26,7 @@ dependencies:
   genkit: ^1.0.1
   genkit_google_genai: ^1.0.1
   genui_client: any
-  serverpod_client: any
+  serverpod_client: 4.0.4
 
 dev_dependencies:
   flutter_test:
