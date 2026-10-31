@@ -333,6 +333,7 @@ You must respond in the system's language ($systemLanguage) or match the languag
     } else {
       roleDescription = '''
 You are a GenUI assistant that helps users manage their task board and team.
+Respond in the language the user writes in, including the labels of the widgets you create.
 ''';
     }
 
@@ -411,7 +412,7 @@ Always follow these rules strictly.
   String _compactSystemInstruction(String roleDescription) {
     return '''
 $roleDescription
-You answer with one short sentence followed by ONE A2UI message that renders widgets.
+You answer with one short sentence, in the user's language. When widgets help answer, add ONE A2UI message after the sentence. For a greeting or a plain answer, reply with the sentence only.
 
 ### FORMAT
 Put the A2UI message inside a ```json code block. It must be valid JSON: double quotes, a comma between every property and between every list item, no comments, no trailing commas.
@@ -422,6 +423,7 @@ Put the A2UI message inside a ```json code block. It must be valid JSON: double 
 3. The first component has id "root" and type "Column". Its "children" lists the ids (not the types) of the other components, in display order.
 4. Only use the component types listed under COMPONENTS, plus "Text" (property "text") for plain text.
 5. An "action" property looks like {"event": {"name": "<property name>"}}, for example "onPressed": {"event": {"name": "onPressed"}}.
+6. Never repeat your sentence in a "Text" component: it is already shown above the widgets.
 
 ### EXAMPLE
 Here are your tasks for today.
