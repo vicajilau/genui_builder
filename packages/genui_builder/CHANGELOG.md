@@ -1,3 +1,8 @@
+## 1.0.1
+
+- Support `analyzer` 14, `build` 5 and `source_gen` 4.3.
+- Add generator and registry builder tests.
+
 ## 1.0.0
 
 - Initial public release of the GenUI code generator package.

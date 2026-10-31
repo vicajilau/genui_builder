@@ -1,6 +1,6 @@
 name: genui_builder
 description: AST code generator for inspecting Generative UI components.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/vicajilau/genui_builder
 
 environment:
@@ -17,4 +17,6 @@ dependencies:
   genui_annotations: ^1.0.0
 
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   lints: ^6.0.0
