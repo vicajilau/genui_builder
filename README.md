@@ -1,247 +1,125 @@
-# GenUI: Code Generation for Flutter Generative UI
+# GenUI Playground
 
 <p align="center">
-  <img src=".github/assets/logo.png" alt="GenUI Logo" width="160"><br><br>
-  <img src="https://github.com/vicajilau/genui/actions/workflows/ci.yml/badge.svg" alt="CI Status">
-  <img src="https://github.com/vicajilau/genui/actions/workflows/deploy_web.yml/badge.svg" alt="Web CD Status">
+  <img src=".github/assets/logo.png" alt="GenUI Playground logo" width="160"><br><br>
+  <img src="https://github.com/vicajilau/genui_playground/actions/workflows/ci.yml/badge.svg" alt="CI Status">
+  <img src="https://github.com/vicajilau/genui_playground/actions/workflows/deploy_web.yml/badge.svg" alt="Web CD Status">
 </p>
 
-The developer experience (DX) companion for the official Google **Generative UI (GenUI)** ecosystem in Flutter.
+A Flutter playground for **Generative UI**: a model composes real Flutter widgets on the fly through the [A2UI](https://a2ui.org) protocol, rendered with Google's [`genui`](https://pub.dev/packages/genui) package.
 
-GenUI code generation automatically extracts data schemas and generates type-safe builders for your widgets at compile time. Instead of manually writing JSON schemas and writing repetitive catalog adapters, you can focus on building standard Flutter widgets.
+The same catalog of components runs against three execution modes, so you can compare how different models and topologies follow the A2UI JSON format:
 
----
-
-## 🚀 Key Features
-
-* **Zero-Boilerplate Catalogs:** Simply decorate your Flutter widget with `@generativeUI`. The build system automatically handles schema mapping and widget instantiation.
-* **Compile-Time Introspection:** Uses Dart's AST (Abstract Syntax Tree) and `build_runner` to extract property constraints, avoiding runtime reflection overhead.
-* **Two-Phase Code Generation:** Automatically generates highly optimized local component schemas (`CatalogItem`s) AND assembles a central `genui_registry.g.dart` catalog index. No manual wiring required.
-* **Automatic Event Mapping:** Event callback properties (like `VoidCallback`) are automatically mapped to dispatch A2UI events (`dispatchEvent(UserActionEvent)`), sending widget states back to the LLM.
-* **Seamless Integration:** Built directly on top of the official `package:genui` and `package:json_schema_builder`.
+| Mode | Where the model runs | How it connects |
+| --- | --- | --- |
+| **Serverless** | Gemini API | Directly from the app, with your API key |
+| **Local** | On the device ([`flutter_gemma`](https://pub.dev/packages/flutter_gemma), Gemma 4 by default) | Offline, after a one-time model download |
+| **Serverpod** | Gemini API, behind a [Serverpod](https://serverpod.dev) backend | Streaming from the app to the server |
 
 ---
 
-## ✨ The Developer Experience (DX)
+## What's inside
 
-1. **Zero Boilerplate:** Decorate your Flutter widget with `@generativeUI`.
-2. **Auto-Discovery:** You don't need to manually register your widgets into a massive list. The `genui_builder` crawls your project and creates a single `globalGenUICatalog` containing everything.
-3. **Fully Type-Safe:** Automatically casts `itemContext.data` values to your widget constructor fields, preventing type mismatches at runtime.
+* **Chat** with two personas: a task board assistant and a customer portal assistant. Their answers mix text and live widgets.
+* **Component catalog** to try each widget on its own: edit its properties, inspect the A2UI JSON and its schema, and trigger its actions.
+* **Twelve custom components** (task items, stats, charts, attachments, timelines, product cards, quick replies…) next to genui's basic catalog.
+
+## How components are defined
+
+The custom widgets in [`app/lib/presentation/widgets/catalog`](./app/lib/presentation/widgets/catalog) are plain Flutter widgets annotated with [`genui_gen`](https://pub.dev/packages/genui_gen). Its builder derives each `CatalogItem` from the constructor: the JSON schema, the descriptions (from the `///` doc comments), the widget builder and an example for the model.
+
+```dart
+/// A custom interactive widget representing a single checklist task item.
+@GenUiWidget(description: 'A single checklist task item.')
+class TaskItemWidget extends StatelessWidget {
+  /// The task title.
+  final String title;
+
+  /// Whether the task is checked as done.
+  final bool isCompleted;
+
+  /// Fired when the user taps the checkbox.
+  @GenUiAction(eventName: 'onToggle')
+  final VoidCallback onToggle;
+
+  // ...
+}
+```
+
+Every property accepts a literal or a data binding (`{"path": "/tasks/0/done"}`). [`app/lib/catalog.dart`](./app/lib/catalog.dart) combines the generated items with genui's basic catalog.
+
+### Actions
+
+Callbacks are A2UI actions: a widget reports an interaction only when the model declares the action, and the model chooses its name and context. The playground's convention is to name the event after the property:
+
+```json
+"onPressed": {"event": {"name": "onPressed", "context": {"label": "Pay invoice"}}}
+```
+
+Widgets that list items (attachments, timeline entries, quick replies) write the tapped item into a `selected…` property before firing their action, so the context can read it from the same data path:
+
+```json
+"selectedReply": {"path": "/selected_reply"},
+"onTapReply": {"event": {"name": "onTapReply", "context": {"reply": {"path": "/selected_reply"}}}}
+```
+
+The app reacts to some actions locally (dismissing an alert, toggling a task and updating the stats…) in [`ChatUiActionDelegate`](./app/lib/presentation/widgets/chat_ui_action_delegate.dart), which identifies the widget by the event's source component.
+
+### The catalog as a document
+
+[`app/catalog.json`](./app/catalog.json) is the A2UI catalog document of the custom components, for agents and backends outside the app. A test keeps it in step with the widgets; regenerate it with:
+
+```bash
+cd app && flutter test test/catalog_json_test.dart --update-goldens
+```
 
 ---
 
-## 📁 Workspace Structure
+## Workspace structure
 
-This monorepo utilizes Dart Pub Workspaces and Melos to ensure clean dependency graphs.
+A Dart pub workspace managed with [Melos](https://melos.invertase.dev).
 
 | Package | Description |
 | --- | --- |
-| [`genui_annotations`](./packages/genui_annotations) | Lightweight package containing the `@generativeUI` and `@GenerativeUI` annotations. |
-| [`genui_builder`](./packages/genui_builder) | The AST code generator using `build_runner` and `analyzer` to extract component schemas and build the global catalog index at compile time. |
-| [`example`](./example) | The playground Flutter app demonstrating the integration with Google's official `package:genui` Surface and SurfaceController. |
+| [`app`](./app) | The Flutter playground app. |
+| [`genui_server`](./genui_server) | Serverpod backend for the Serverpod mode. |
+| [`genui_client`](./genui_client) | Client generated by Serverpod for the app. |
 
----
+## Getting started
 
-## 🛠️ Getting Started
-
-### Prerequisites
-
-Ensure you have **Dart SDK ^3.12.0** or Flutter SDK installed. You also need Melos activated globally.
+Requires Flutter with Dart SDK ^3.12.0, and Melos:
 
 ```bash
-# Activate Melos globally
 dart pub global activate melos
-```
 
-### Setup the Workspace
-
-Clone the repository and resolve dependencies:
-
-```bash
-git clone https://github.com/vicajilau/genui.git
-cd genui
-
-# Link dependencies natively across the workspace
+git clone https://github.com/vicajilau/genui_playground.git
+cd genui_playground
 flutter pub get
 ```
 
-### Code Generation
-
-To generate your UI schemas and the global registry, run:
+Regenerate the catalog after changing a widget:
 
 ```bash
-# Triggers code generation across all workspace packages
 melos run build_runner
 ```
 
----
-
-## 📖 Usage Example
-
-### 1. Annotate your Widgets
-
-Import the annotations package, decorate your widget, and include the `.genui.g.dart` part directive.
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:genui/genui.dart';
-import 'package:genui_annotations/genui_annotations.dart';
-import 'package:json_schema_builder/json_schema_builder.dart';
-
-part 'user_card.genui.g.dart';
-
-@generativeUI
-class UserCard extends StatelessWidget {
-  final String username;
-  final String role;
-
-  const UserCard({
-    super.key,
-    required this.username,
-    required this.role,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text(username),
-        subtitle: Text(role),
-      ),
-    );
-  }
-}
-```
-
-### 2. Consume the Global Catalog
-
-Run the code generator. GenUI will automatically compile your widget into a `CatalogItem` and export it to a global `Catalog` in `lib/genui_registry.g.dart`.
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:genui/genui.dart';
-
-// Auto-generated by GenUI Builder
-import 'genui_registry.g.dart';
-
-void main() {
-  // Inject the global catalog into the official SurfaceController
-  // Note: globalGenUICatalog automatically includes Google's official layout elements (Row, Column, Text, etc.) alongside your custom widgets!
-  final controller = SurfaceController(catalogs: [globalGenUICatalog]);
-
-  runApp(MainApp(controller: controller));
-}
-
-class MainApp extends StatelessWidget {
-  final SurfaceController controller;
-  const MainApp({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          // Render dynamic surfaces automatically using your catalog!
-          child: Surface(
-            surfaceContext: controller.contextFor('demo_surface'),
-          ),
-        ),
-      ),
-    );
-  }
-}
-```
-
-### 3. Handle Events Type-Safely
-
-If your widget defines interactive callbacks (like `VoidCallback onToggle`), you can parse and process them cleanly using `GenUiEvent` and auto-generated event constants:
-
-```dart
-import 'package:genui_annotations/genui_annotations.dart';
-// Import the generated events:
-import 'widgets/user_card.genui.g.dart';
-
-void handleWidgetEvent(String eventJson) {
-  final event = GenUiEvent.parse(eventJson);
-  if (event == null) return;
-
-  if (event.name == UserCardEvents.onToggle) {
-    print('UserCard clicked for component ID: ${event.sourceComponentId}');
-    print('Widget properties context: ${event.context}');
-  }
-}
-```
-
-*Note: For callbacks that take arguments (e.g. `ValueChanged<bool> onChanged`), parameter names and values are automatically appended to the event's `context` map (e.g. `event.context['value']`).*
-
-### 4. Decoupled AI Schema Sharing (e.g. Google Genkit)
-
-GenUI supports exporting your UI component schemas in a framework-agnostic way. This is ideal if you are orchestrating your AI models in a separate Node.js, Go, or Python backend (like Google Genkit).
-
-#### In-Memory Usage (Client-Side LLM)
-If your AI runs locally on the device or if you have a Dart backend, you can fetch pre-formatted schemas directly from `genui_registry.g.dart`:
-
-```dart
-// 1. Raw Dart Map of JSON Schemas:
-Map<String, Map<String, dynamic>> schemas = globalGenUISchemas;
-
-// 2. Pre-formatted Markdown list ready for LLM System Instructions:
-String systemInstruction = '''
-You are a GenUI assistant. You must respond using components defined here:
-$globalGenUISchemasPromptDescription
-''';
-```
-
-#### Static File Export (Backend Genkit/TypeScript)
-To use your schemas in a separate backend repository (e.g., Node.js with Genkit), you can export the schemas to a static JSON file. 
-
-Because the generated registry transitively imports `package:flutter` (which has native graphic/engine bindings), running a standalone Dart script via `dart run` in the console will fail. Instead, we run a headless script using the `flutter test` runner, which resolves all Flutter engine bindings correctly.
-
-To set this up in your own Flutter project:
-
-1. **Create the export script** as a test file (e.g., `test/genui_schemas_export_test.dart`):
-
-```dart
-import 'dart:convert';
-import 'dart:io';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:your_app_name/genui_registry.g.dart'; // Import your generated registry
-
-void main() {
-  test('Export GenUI schemas to JSON', () {
-    final schemas = globalGenUISchemas;
-    final jsonString = const JsonEncoder.withIndent('  ').convert(schemas);
-    
-    // Auto-detect the project root and write to build/genui_schemas.json
-    final envPath = Platform.environment['GENUI_EXPORT_PATH'];
-    final file = envPath != null && envPath.isNotEmpty
-        ? File(envPath)
-        : File('build/genui_schemas.json');
-        
-    file.parent.createSync(recursive: true);
-    file.writeAsStringSync(jsonString);
-    print('✓ Schemas exported to: ${file.absolute.path}');
-  });
-}
-```
-
-2. **Trigger the export automatically** by appending it to your build command in your `pubspec.yaml` scripts or Melos tasks:
+Run the app:
 
 ```bash
-# Run build_runner, then run the test script to write the JSON schema contract
-dart run build_runner build && flutter test test/genui_schemas_export_test.dart
+cd app
+flutter run
 ```
 
-By default, this will write the schema to `build/genui_schemas.json` relative to your project's root.
+Then open the settings to configure at least one mode:
 
-If you want to copy the file directly to a custom directory (e.g., to a sibling folder containing your Node.js Genkit backend), you can use the `GENUI_EXPORT_PATH` environment variable:
+* **Serverless**: a [Gemini API key](https://aistudio.google.com/apikey).
+* **Local**: a `.litertlm` model URL or file path. The default, Gemma 4 E2B, is downloaded (2.6 GB, 2 GB on web) with the first message. See the [`flutter_gemma` platform setup](https://pub.dev/packages/flutter_gemma) for iOS and macOS.
+* **Serverpod**: the server URL, after starting the server with `cd genui_server && serverpod start`.
 
-```bash
-GENUI_EXPORT_PATH=../my-genkit-backend/src/genui_schemas.json flutter test test/genui_schemas_export_test.dart
-```
+Other Melos scripts: `melos run analyze`, `melos run format` and `melos run test`.
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+See [LICENSE](./LICENSE).

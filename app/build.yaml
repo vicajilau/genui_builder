@@ -1,0 +1,6 @@
+targets:
+  $default:
+    builders:
+      genui_gen_builder:genui_catalog:
+        options:
+          catalog_id: genui_playground

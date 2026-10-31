@@ -24,11 +24,11 @@ serverpod:
     flutter_build:
       windows: >-
         (if exist web\app rmdir /S /Q web\app)
-        & cd /D ..\example
+        & cd /D ..\app
         && flutter build web --base-href /
         && xcopy /E /I /Y build\web ..\genui_server\web\app
       posix: |
-        cd ../example
+        cd ../app
         flutter build web --base-href / --output ../genui_server/web/app
   
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
@@ -51,7 +51,7 @@ serverpod:
   #     FLAVOR=production
   flutter_apps:
     genui:
-      path: ../example
-      displayName: "GenUI Playground example"
+      path: ../app
+      displayName: "GenUI Playground"
       auto_launch: true
       target: lib/main.dart

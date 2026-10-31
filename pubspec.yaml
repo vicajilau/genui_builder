@@ -1,14 +1,12 @@
-name: genui_workspace
-description: Monorepo for Generative UI
+name: genui_playground_workspace
+description: Playground for Generative UI with Flutter, genui and A2UI.
 publish_to: none
 
 environment:
   sdk: ^3.12.0 
 
 workspace:
-  - packages/genui_annotations
-  - packages/genui_builder
-  - example
+  - app
   - genui_server
   - genui_client
 
@@ -18,7 +16,7 @@ dev_dependencies:
 melos:
   scripts:
     build_runner:
-      run: melos exec -c 1 --depends-on="build_runner" -- "dart run build_runner build --delete-conflicting-outputs" && (cd example && flutter test test/export_schemas_test.dart)
+      run: melos exec -c 1 --depends-on="build_runner" -- "dart run build_runner build" && dart format app/lib && (cd app && flutter test test/catalog_json_test.dart)
       description: Run build_runner in all required packages.
     analyze:
       run: melos exec -- "dart analyze . --fatal-infos"
