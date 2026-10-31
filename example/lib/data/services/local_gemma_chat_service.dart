@@ -1,24 +1,43 @@
-// ignore_for_file: prefer_initializing_formals
-
 import 'dart:async';
-import 'dart:convert';
+
+import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
+
 import 'chat_service.dart';
 
-/// A stub [ChatService] implementation representing local on-device inference
-/// using Gemma weights.
+/// A [ChatService] implementation that runs a `.litertlm` model on the device
+/// with flutter_gemma.
+///
+/// [modelSource] is either an `http(s)` URL, which is downloaded on the first
+/// message and cached, or the path of a model file already on disk.
 class LocalGemmaChatService implements ChatService {
-  final String _modelPath;
-  final double _temperature;
-
   LocalGemmaChatService({
-    required String modelPath,
-    required double temperature,
-  }) : _modelPath = modelPath,
-       _temperature = temperature;
+    required this.modelSource,
+    required this.temperature,
+    required this.systemInstruction,
+  });
+
+  final String modelSource;
+  final double temperature;
+  final String systemInstruction;
+
+  /// The context window. The system instruction carries every component
+  /// schema, so it needs more room than flutter_gemma's 1024 default.
+  static const int _maxTokens = 8192;
+
+  /// flutter_gemma keeps one engine and one active model per process, so the
+  /// engine is registered once and shared by every service instance.
+  static Future<void>? _engineReady;
+
+  /// The source of the model currently installed and loaded, if any.
+  static String? _loadedSource;
+
+  InferenceChat? _chat;
 
   @override
   Future<void> initialize() async {
-    // No-op for the local stub initialization
+    // The model is installed lazily on the first message, so that switching
+    // to local mode in settings does not start a multi-gigabyte download.
   }
 
   @override
@@ -26,45 +45,99 @@ class LocalGemmaChatService implements ChatService {
     required String prompt,
     required List<Map<String, dynamic>> history,
   }) async* {
-    yield 'Initializing local Gemma inference pipeline...\n';
-    yield '• Model weight path: $_modelPath\n';
-    yield '• Inference temperature: $_temperature\n\n';
+    _engineReady ??= FlutterGemma.initialize(
+      inferenceEngines: [LiteRtLmEngine()],
+      // Models above ~2 GB do not fit the Cache API on web.
+      webStorageMode: WebStorageMode.streaming,
+    );
+    await _engineReady;
 
-    await Future.delayed(const Duration(milliseconds: 600));
-    yield '✓ Model loaded into GPU memory (mock).\n';
-    yield '• Processing context tokens...\n\n';
+    if (_loadedSource != modelSource) {
+      yield* _installModel();
+      _loadedSource = modelSource;
+    }
 
-    await Future.delayed(const Duration(milliseconds: 800));
-    yield 'Gemma response:\n';
-    yield 'I have processed your request locally. Here is an offline status alert rendered on your catalog surface:\n\n';
+    final model = await FlutterGemma.getActiveModel(maxTokens: _maxTokens);
 
-    final localUiPayload = {
-      'version': 'v0.9',
-      'updateComponents': {
-        'surfaceId': 'composed_surface',
-        'components': [
-          {
-            'id': 'root',
-            'component': 'Column',
-            'children': ['local_banner'],
+    // The controller owns the history, so each message starts a fresh chat and
+    // replays it. Creating a chat closes the previous one on the same model.
+    await _chat?.close();
+    final chat = await model.createChat(
+      systemInstruction: systemInstruction,
+      temperature: temperature,
+      topK: 40,
+    );
+    _chat = chat;
+
+    for (final message in history) {
+      final text = _textOf(message);
+      if (text.isEmpty) continue;
+      await chat.addQueryChunk(
+        Message(text: text, isUser: message['role'] == 'user'),
+      );
+    }
+    await chat.addQueryChunk(Message(text: prompt, isUser: true));
+
+    await for (final response in chat.generateChatResponseAsync()) {
+      switch (response) {
+        case TextResponse(:final token):
+          yield token;
+        case ThinkingResponse() ||
+            FunctionCallResponse() ||
+            ParallelFunctionCallResponse():
+          break;
+      }
+    }
+  }
+
+  /// Installs [modelSource], reporting download progress as chat text.
+  Stream<String> _installModel() {
+    final progress = StreamController<String>();
+    final builder = FlutterGemma.installModel(
+      modelType: ModelType.gemma4,
+      fileType: ModelFileType.litertlm,
+    );
+    final isUrl =
+        modelSource.startsWith('http://') || modelSource.startsWith('https://');
+    var lastReported = -10;
+
+    (isUrl ? builder.fromNetwork(modelSource) : builder.fromFile(modelSource))
+        .withProgress((percent) {
+          // `install()` skips the download when the file is already on disk,
+          // in which case no progress is reported.
+          if (percent >= lastReported + 10) {
+            lastReported = percent;
+            progress.add('Downloading model: $percent%\n');
+          }
+        })
+        .install()
+        .then(
+          (_) {
+            if (lastReported >= 0) progress.add('\n');
+            progress.close();
           },
-          {
-            'id': 'local_banner',
-            'component': 'AlertBannerWidget',
-            'type': 'info',
-            'message':
-                'Local Mode Active (Stub) — Gemma 2B weights simulation completed successfully!',
+          onError: (Object error, StackTrace stackTrace) {
+            progress.addError(error, stackTrace);
+            progress.close();
           },
-        ],
-      },
-    };
+        );
 
-    await Future.delayed(const Duration(milliseconds: 300));
-    yield '```json\n${const JsonEncoder.withIndent('  ').convert(localUiPayload)}\n```';
+    return progress.stream;
+  }
+
+  /// Joins the text parts of a message in the Gemini history format.
+  static String _textOf(Map<String, dynamic> message) {
+    final parts = message['parts'] as List? ?? const [];
+    return parts
+        .whereType<Map>()
+        .map((part) => part['text'])
+        .whereType<String>()
+        .join();
   }
 
   @override
   void dispose() {
-    // Release resources
+    _chat?.close();
+    _chat = null;
   }
 }
