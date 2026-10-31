@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/encryption_service.dart';
 
@@ -99,11 +100,18 @@ class ConnectionSettingsService {
     await _prefs.setString(_keyServerpodUrl, url);
   }
 
-  /// Retrieves the local model file path. Defaults to 'gemma-2b-it.bin'.
-  String get localModelPath =>
-      _prefs.getString(_keyLocalModelPath) ?? 'gemma-2b-it.bin';
+  /// The default local model: Gemma 4 E2B in `.litertlm` format, which needs
+  /// no Hugging Face token. The web engine loads its own build of the model.
+  static String get defaultLocalModelUrl => kIsWeb
+      ? 'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it-web.litertlm'
+      : 'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm';
 
-  /// Sets the local model file path.
+  /// Retrieves the local `.litertlm` model URL or file path. Defaults to
+  /// [defaultLocalModelUrl].
+  String get localModelPath =>
+      _prefs.getString(_keyLocalModelPath) ?? defaultLocalModelUrl;
+
+  /// Sets the local model URL or file path.
   Future<void> setLocalModelPath(String path) async {
     await _prefs.setString(_keyLocalModelPath, path);
   }

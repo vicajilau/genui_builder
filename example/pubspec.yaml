@@ -27,6 +27,8 @@ dependencies:
   genkit_google_genai: ^1.0.1
   genui_client: any
   serverpod_client: any
+  flutter_gemma: ^1.11.4
+  flutter_gemma_litertlm: ^1.8.6
 
 dev_dependencies:
   flutter_test:

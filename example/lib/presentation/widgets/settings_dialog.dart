@@ -222,6 +222,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
         if (path.isEmpty) {
           success = false;
           message = l10n.modelPathCannotBeEmpty;
+        } else if (!path.toLowerCase().endsWith('.litertlm')) {
+          success = false;
+          message = l10n.modelPathMustBeLitertlm;
         } else {
           success = true;
           message = l10n.modelPathIsValid;
@@ -826,7 +829,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               controller: _localModelController,
               decoration: InputDecoration(
                 labelText: l10n.modelFilePathLabel,
-                hintText: 'gemma-2b-it.bin',
+                hintText: ConnectionSettingsService.defaultLocalModelUrl,
                 border: const OutlineInputBorder(),
               ),
               onChanged: (_) => setState(() {}),

@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// Warning card description when no chat backend is set
   ///
   /// In en, this message translates to:
-  /// **'To start using the chat interface and rendering Generative UI in real-time, please open settings and configure at least one of the execution modes:\n\n• Serverless: Enter a Gemini API Key to connect directly from the client.\n• Local Model: Provide a model path (e.g. gemma-2b-it.bin) for on-device inference.\n• Serverpod: Configure a remote Serverpod server URL.'**
+  /// **'To start using the chat interface and rendering Generative UI in real-time, please open settings and configure at least one of the execution modes:\n\n• Serverless: Enter a Gemini API Key to connect directly from the client.\n• Local Model: Provide a .litertlm model URL or file path for on-device inference.\n• Serverpod: Configure a remote Serverpod server URL.'**
   String get noChatConnectionDescription;
 
   /// Label for Serverless Gemini mode
@@ -419,7 +419,7 @@ abstract class AppLocalizations {
   /// Label for local model file path input
   ///
   /// In en, this message translates to:
-  /// **'Model File Path (Assets/Storage)'**
+  /// **'Model URL or File Path (.litertlm)'**
   String get modelFilePathLabel;
 
   /// Label for serverpod server host endpoint URL input
@@ -470,10 +470,16 @@ abstract class AppLocalizations {
   /// **'Model path cannot be empty.'**
   String get modelPathCannotBeEmpty;
 
+  /// Test result message when the local model is not a .litertlm file
+  ///
+  /// In en, this message translates to:
+  /// **'The model must be a .litertlm file.'**
+  String get modelPathMustBeLitertlm;
+
   /// Test result message when model path has valid format
   ///
   /// In en, this message translates to:
-  /// **'Model file path format is valid! (Mock weight check passed)'**
+  /// **'Model source is valid! It is downloaded on the first message.'**
   String get modelPathIsValid;
 
   /// Test result message when server URL input is empty

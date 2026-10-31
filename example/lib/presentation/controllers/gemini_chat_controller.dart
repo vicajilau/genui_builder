@@ -88,8 +88,9 @@ class GeminiChatController extends ChangeNotifier {
         break;
       case ChatMode.local:
         _chatService = LocalGemmaChatService(
-          modelPath: _settingsService.localModelPath,
+          modelSource: _settingsService.localModelPath,
           temperature: _settingsService.localTemperature,
+          systemInstruction: _buildSystemInstruction(),
         );
         break;
       case ChatMode.serverpod:

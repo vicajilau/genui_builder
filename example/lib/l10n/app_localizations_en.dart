@@ -138,7 +138,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noChatConnectionDescription =>
-      'To start using the chat interface and rendering Generative UI in real-time, please open settings and configure at least one of the execution modes:\n\n• Serverless: Enter a Gemini API Key to connect directly from the client.\n• Local Model: Provide a model path (e.g. gemma-2b-it.bin) for on-device inference.\n• Serverpod: Configure a remote Serverpod server URL.';
+      'To start using the chat interface and rendering Generative UI in real-time, please open settings and configure at least one of the execution modes:\n\n• Serverless: Enter a Gemini API Key to connect directly from the client.\n• Local Model: Provide a .litertlm model URL or file path for on-device inference.\n• Serverpod: Configure a remote Serverpod server URL.';
 
   @override
   String get serverlessGeminiLabel => 'Serverless Gemini';
@@ -180,7 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getApiKeyButton => 'GET API KEY';
 
   @override
-  String get modelFilePathLabel => 'Model File Path (Assets/Storage)';
+  String get modelFilePathLabel => 'Model URL or File Path (.litertlm)';
 
   @override
   String get serverHostUrlLabel => 'Server Host endpoint URL';
@@ -208,8 +208,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modelPathCannotBeEmpty => 'Model path cannot be empty.';
 
   @override
+  String get modelPathMustBeLitertlm => 'The model must be a .litertlm file.';
+
+  @override
   String get modelPathIsValid =>
-      'Model file path format is valid! (Mock weight check passed)';
+      'Model source is valid! It is downloaded on the first message.';
 
   @override
   String get serverUrlCannotBeEmpty => 'Server URL cannot be empty.';
