@@ -8,26 +8,27 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod/protocol.dart' as _i2;
-import 'chat/chat_message_history.dart' as _i3;
-import 'chat/chat_message_part.dart' as _i4;
 import 'package:genui_server/src/generated/chat/chat_message_history.dart'
-    as _i5;
+    as _i5wxyimw;
+import 'package:serverpod/protocol.dart' as _isp;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'chat/chat_message_history.dart' as _ide8bzxf;
+import 'chat/chat_message_part.dart' as _ihyde1km;
 export 'chat/chat_message_history.dart';
 export 'chat/chat_message_part.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  static final List<_i2.TableDefinition> targetTableDefinitions = [
-    ..._i2.Protocol.targetTableDefinitions,
+  static List<_isp.TableDefinition> get targetTableDefinitions => [
+    ..._isp.Protocol.targetTableDefinitions,
   ];
 
   static String? getClassNameFromObjectJson(dynamic data) {
@@ -50,47 +51,49 @@ class Protocol extends _i1.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _is.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i3.ChatMessageHistory) {
-      return _i3.ChatMessageHistory.fromJson(data) as T;
+    if (t == _ide8bzxf.ChatMessageHistory) {
+      return _ide8bzxf.ChatMessageHistory.fromJson(data) as T;
     }
-    if (t == _i4.ChatMessagePart) {
-      return _i4.ChatMessagePart.fromJson(data) as T;
+    if (t == _ihyde1km.ChatMessagePart) {
+      return _ihyde1km.ChatMessagePart.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.ChatMessageHistory?>()) {
-      return (data != null ? _i3.ChatMessageHistory.fromJson(data) : null) as T;
+    if (t == _is.getType<_ide8bzxf.ChatMessageHistory?>()) {
+      return (data != null ? _ide8bzxf.ChatMessageHistory.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i4.ChatMessagePart?>()) {
-      return (data != null ? _i4.ChatMessagePart.fromJson(data) : null) as T;
+    if (t == _is.getType<_ihyde1km.ChatMessagePart?>()) {
+      return (data != null ? _ihyde1km.ChatMessagePart.fromJson(data) : null)
+          as T;
     }
-    if (t == List<_i4.ChatMessagePart>) {
+    if (t == List<_ihyde1km.ChatMessagePart>) {
       return (data as List)
-              .map((e) => deserialize<_i4.ChatMessagePart>(e))
+              .map((e) => deserialize<_ihyde1km.ChatMessagePart>(e))
               .toList()
           as T;
     }
-    if (t == List<_i5.ChatMessageHistory>) {
+    if (t == List<_i5wxyimw.ChatMessageHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i5.ChatMessageHistory>(e))
+              .map((e) => deserialize<_i5wxyimw.ChatMessageHistory>(e))
               .toList()
           as T;
     }
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _isp.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i3.ChatMessageHistory => 'ChatMessageHistory',
-      _i4.ChatMessagePart => 'ChatMessagePart',
+      _ide8bzxf.ChatMessageHistory => 'ChatMessageHistory',
+      _ihyde1km.ChatMessagePart => 'ChatMessagePart',
       _ => null,
     };
   }
@@ -105,12 +108,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i3.ChatMessageHistory():
+      case _ide8bzxf.ChatMessageHistory():
         return 'ChatMessageHistory';
-      case _i4.ChatMessagePart():
+      case _ihyde1km.ChatMessagePart():
         return 'ChatMessagePart';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _isp.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod.$className';
     }
@@ -124,22 +127,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'ChatMessageHistory') {
-      return deserialize<_i3.ChatMessageHistory>(data['data']);
+      return deserialize<_ide8bzxf.ChatMessageHistory>(data['data']);
     }
     if (dataClassName == 'ChatMessagePart') {
-      return deserialize<_i4.ChatMessagePart>(data['data']);
+      return deserialize<_ihyde1km.ChatMessagePart>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _is.Table? getTableForType(Type t) {
     {
-      var table = _i2.Protocol().getTableForType(t);
+      var table = _isp.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
@@ -148,7 +151,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
   }
 
   @override
-  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+  List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -164,7 +167,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return null;
     }
     try {
-      return _i2.Protocol().mapRecordToJson(record);
+      return _isp.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

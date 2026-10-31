@@ -10,65 +10,65 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../chat/chat_endpoint.dart' as _i2;
-import '../greetings/greeting_endpoint.dart' as _i3;
 import 'package:genui_server/src/generated/chat/chat_message_history.dart'
-    as _i4;
+    as _i5wxyimw;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../chat/chat_endpoint.dart' as _i3w57des;
+import '../greetings/greeting_endpoint.dart' as _il624ik7;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'chat': _i2.ChatEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'chat': _i3w57des.ChatEndpoint()
         ..initialize(
           server,
           'chat',
           null,
         ),
-      'greeting': _i3.GreetingEndpoint()
+      'greeting': _il624ik7.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
           null,
         ),
     };
-    connectors['chat'] = _i1.EndpointConnector(
+    connectors['chat'] = _is.EndpointConnector(
       name: 'chat',
       endpoint: endpoints['chat']!,
       methodConnectors: {
-        'chatStream': _i1.MethodStreamConnector(
+        'chatStream': _is.MethodStreamConnector(
           name: 'chatStream',
           params: {
-            'prompt': _i1.ParameterDescription(
+            'prompt': _is.ParameterDescription(
               name: 'prompt',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'history': _i1.ParameterDescription(
+            'history': _is.ParameterDescription(
               name: 'history',
-              type: _i1.getType<List<_i4.ChatMessageHistory>>(),
+              type: _is.getType<List<_i5wxyimw.ChatMessageHistory>>(),
               nullable: false,
             ),
-            'systemInstruction': _i1.ParameterDescription(
+            'systemInstruction': _is.ParameterDescription(
               name: 'systemInstruction',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'apiKey': _i1.ParameterDescription(
+            'apiKey': _is.ParameterDescription(
               name: 'apiKey',
-              type: _i1.getType<String?>(),
+              type: _is.getType<String?>(),
               nullable: true,
             ),
           },
           streamParams: {},
-          returnType: _i1.MethodStreamReturnType.streamType,
+          returnType: _is.MethodStreamReturnType.streamType,
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
-              ) => (endpoints['chat'] as _i2.ChatEndpoint).chatStream(
+              ) => (endpoints['chat'] as _i3w57des.ChatEndpoint).chatStream(
                 session,
                 prompt: params['prompt'],
                 history: params['history'],
@@ -78,19 +78,19 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['greeting'] = _i1.EndpointConnector(
+    connectors['greeting'] = _is.EndpointConnector(
       name: 'greeting',
       endpoint: endpoints['greeting']!,
       methodConnectors: {
-        'ping': _i1.MethodConnector(
+        'ping': _is.MethodConnector(
           name: 'ping',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['greeting'] as _i3.GreetingEndpoint).ping(session),
+              ) async => (endpoints['greeting'] as _il624ik7.GreetingEndpoint)
+                  .ping(session),
         ),
       },
     );
