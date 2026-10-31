@@ -49,6 +49,9 @@ class GeminiChatController extends ChangeNotifier {
 
   List<ChatTimelineItem> get chatHistory => _chatHistory;
   bool get isWaiting => _isWaiting;
+
+  /// What the chat service is doing before it can answer, if anything.
+  ChatServiceStatus? get serviceStatus => _chatService.status.value;
   bool get hasError => _hasError;
   String? get lastErrorMessage => _lastErrorMessage;
   SurfaceController get aiController => _aiController;
@@ -101,12 +104,18 @@ class GeminiChatController extends ChangeNotifier {
         );
         break;
     }
+    _chatService.status.addListener(notifyListeners);
     // Asynchronous initialization
     _chatService.initialize();
   }
 
-  void reloadSettings() {
+  void _disposeChatService() {
+    _chatService.status.removeListener(notifyListeners);
     _chatService.dispose();
+  }
+
+  void reloadSettings() {
+    _disposeChatService();
     _initChatService();
     // If the chat history is empty, or if it only contains the initial greeting message,
     // re-seed it to dynamically update to the new locale or persona context.
@@ -438,7 +447,7 @@ Always follow these rules strictly.
     _aiTransport.dispose();
     _aiController.dispose();
 
-    _chatService.dispose();
+    _disposeChatService();
     _initChatService();
 
     _aiController = SurfaceController(catalogs: [playgroundCatalog]);
@@ -466,7 +475,7 @@ Always follow these rules strictly.
     _aiTransport.dispose();
     _aiController.dispose();
     _errorController.close();
-    _chatService.dispose();
+    _disposeChatService();
     super.dispose();
   }
 }

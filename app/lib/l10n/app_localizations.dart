@@ -1321,6 +1321,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{completed}/{total} Completed'**
   String statsCompletedCount(int completed, int total);
+
+  /// Progress of the local model download
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading model… {percent}%'**
+  String localModelDownloading(int percent);
+
+  /// Shown while the local model loads and reads the prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Loading model… The first answer can take a while.'**
+  String get localModelLoading;
 }
 
 class _AppLocalizationsDelegate

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
 
@@ -21,9 +22,10 @@ class LocalGemmaChatService implements ChatService {
   final double temperature;
   final String systemInstruction;
 
-  /// The context window. The system instruction carries every component
-  /// schema, so it needs more room than flutter_gemma's 1024 default.
-  static const int _maxTokens = 8192;
+  /// The context window. The system instruction alone takes about 6k tokens,
+  /// since it carries every component schema and example, and the history is
+  /// replayed on every message.
+  static const int _maxTokens = 16384;
 
   /// flutter_gemma keeps one engine and one active model per process, so the
   /// engine is registered once and shared by every service instance.
@@ -33,6 +35,12 @@ class LocalGemmaChatService implements ChatService {
   static String? _loadedSource;
 
   InferenceChat? _chat;
+
+  final _status = ValueNotifier<ChatServiceStatus?>(null);
+  bool _disposed = false;
+
+  @override
+  ValueListenable<ChatServiceStatus?> get status => _status;
 
   @override
   Future<void> initialize() async {
@@ -50,79 +58,77 @@ class LocalGemmaChatService implements ChatService {
       // Models above ~2 GB do not fit the Cache API on web.
       webStorageMode: WebStorageMode.streaming,
     );
-    await _engineReady;
 
-    if (_loadedSource != modelSource) {
-      yield* _installModel();
-      _loadedSource = modelSource;
-    }
+    try {
+      await _engineReady;
 
-    final model = await FlutterGemma.getActiveModel(maxTokens: _maxTokens);
-
-    // The controller owns the history, so each message starts a fresh chat and
-    // replays it. Creating a chat closes the previous one on the same model.
-    await _chat?.close();
-    final chat = await model.createChat(
-      systemInstruction: systemInstruction,
-      temperature: temperature,
-      topK: 40,
-    );
-    _chat = chat;
-
-    for (final message in history) {
-      final text = _textOf(message);
-      if (text.isEmpty) continue;
-      await chat.addQueryChunk(
-        Message(text: text, isUser: message['role'] == 'user'),
-      );
-    }
-    await chat.addQueryChunk(Message(text: prompt, isUser: true));
-
-    await for (final response in chat.generateChatResponseAsync()) {
-      switch (response) {
-        case TextResponse(:final token):
-          yield token;
-        case ThinkingResponse() ||
-            FunctionCallResponse() ||
-            ParallelFunctionCallResponse():
-          break;
+      if (_loadedSource != modelSource) {
+        await _installModel();
+        _loadedSource = modelSource;
       }
+
+      // Loading the model and reading the long system prompt are the slow
+      // part, so the status stays up until the first token arrives.
+      _status.value = const LoadingModel();
+      final model = await FlutterGemma.getActiveModel(maxTokens: _maxTokens);
+
+      // The controller owns the history, so each message starts a fresh chat
+      // and replays it. Creating a chat closes the previous one on the model.
+      await _chat?.close();
+      final chat = await model.createChat(
+        systemInstruction: systemInstruction,
+        temperature: temperature,
+        topK: 40,
+      );
+      _chat = chat;
+
+      for (final message in history) {
+        final text = _textOf(message);
+        if (text.isEmpty) continue;
+        await chat.addQueryChunk(
+          Message(text: text, isUser: message['role'] == 'user'),
+        );
+      }
+      await chat.addQueryChunk(Message(text: prompt, isUser: true));
+
+      await for (final response in chat.generateChatResponseAsync()) {
+        switch (response) {
+          case TextResponse(:final token):
+            _status.value = null;
+            yield token;
+          case ThinkingResponse() ||
+              FunctionCallResponse() ||
+              ParallelFunctionCallResponse():
+            break;
+        }
+      }
+    } finally {
+      // The service may be disposed mid-reply, e.g. when settings change.
+      if (!_disposed) _status.value = null;
     }
   }
 
-  /// Installs [modelSource], reporting download progress as chat text.
-  Stream<String> _installModel() {
-    final progress = StreamController<String>();
+  /// Installs [modelSource], reporting download progress through [status].
+  Future<void> _installModel() {
     final builder = FlutterGemma.installModel(
       modelType: ModelType.gemma4,
       fileType: ModelFileType.litertlm,
     );
     final isUrl =
         modelSource.startsWith('http://') || modelSource.startsWith('https://');
-    var lastReported = -10;
 
-    (isUrl ? builder.fromNetwork(modelSource) : builder.fromFile(modelSource))
+    return (isUrl
+            ? builder.fromNetwork(modelSource)
+            : builder.fromFile(modelSource))
         .withProgress((percent) {
           // `install()` skips the download when the file is already on disk,
           // in which case no progress is reported.
-          if (percent >= lastReported + 10) {
-            lastReported = percent;
-            progress.add('Downloading model: $percent%\n');
+          final current = _status.value;
+          if (current is! DownloadingModel || current.percent != percent) {
+            _status.value = DownloadingModel(percent);
           }
         })
-        .install()
-        .then(
-          (_) {
-            if (lastReported >= 0) progress.add('\n');
-            progress.close();
-          },
-          onError: (Object error, StackTrace stackTrace) {
-            progress.addError(error, stackTrace);
-            progress.close();
-          },
-        );
-
-    return progress.stream;
+        .install();
   }
 
   /// Joins the text parts of a message in the Gemini history format.
@@ -139,5 +145,7 @@ class LocalGemmaChatService implements ChatService {
   void dispose() {
     _chat?.close();
     _chat = null;
+    _disposed = true;
+    _status.dispose();
   }
 }
