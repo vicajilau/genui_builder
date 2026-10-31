@@ -3,9 +3,7 @@ name: Publish genui_builder
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'
-    paths:
-      - 'packages/genui_builder/**'
+      - 'genui_builder-v[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
   publish:
@@ -14,6 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # Configures the pub.dev OIDC token.
       - uses: dart-lang/setup-dart@v1
+      # The pub workspace contains Flutter packages, so resolution needs Flutter.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get --enforce-lockfile
       - run: dart pub publish --force
         working-directory: packages/genui_builder

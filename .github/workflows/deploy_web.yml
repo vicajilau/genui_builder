@@ -39,7 +39,7 @@ jobs:
         run: dart pub global activate melos
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Generate build_runner files
         run: melos run build_runner
