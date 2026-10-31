@@ -248,9 +248,14 @@ class _ComposedScreenState extends State<ComposedScreen>
                 padding: const EdgeInsets.all(16.0),
                 itemCount: controller.chatHistory.length,
                 itemBuilder: (context, index) {
+                  final history = controller.chatHistory;
+                  final previous = index > 0 ? history[index - 1] : null;
                   return ChatMessageBubble(
-                    item: controller.chatHistory[index],
+                    item: history[index],
                     controller: controller.aiController,
+                    replyText: previous != null && !previous.isUser
+                        ? previous.text
+                        : null,
                   );
                 },
               ),
