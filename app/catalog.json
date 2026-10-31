@@ -1,0 +1,783 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2ui.org/specification/v0_9/catalog.json",
+  "title": "GenUI Playground",
+  "description": "Custom components of the GenUI Playground.",
+  "catalogId": "genui_playground",
+  "components": {
+    "AlertBannerWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "AlertBannerWidget"
+              ]
+            },
+            "type": {
+              "description": "The alert style: 'info', 'success', 'warning' or 'error'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "message": {
+              "description": "The alert text.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "actionLabel": {
+              "description": "Label of the action button. The button is hidden when absent.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "onAction": {
+              "description": "Fired when the user taps the action button.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            },
+            "onDismiss": {
+              "description": "Fired when the user dismisses the alert.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            }
+          },
+          "required": [
+            "component",
+            "type",
+            "message"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "AttachmentListWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "AttachmentListWidget"
+              ]
+            },
+            "items": {
+              "description": "The files to list.",
+              "oneOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "A file in an attachment list.",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The file name, including its extension."
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "The file type: 'pdf', 'image', 'document', 'spreadsheet', 'audio', 'video', 'archive', 'folder' or 'file'."
+                      },
+                      "size": {
+                        "type": "string",
+                        "description": "The human-readable file size, e.g. '2.4 MB'."
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  }
+                },
+                {
+                  "type": "object",
+                  "description": "A path to a list.",
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "description": "A relative or absolute path in the data model."
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "call": {
+                      "type": "string",
+                      "description": "The name of the function to call."
+                    },
+                    "args": {
+                      "type": "object",
+                      "description": "Arguments to pass to the function.",
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "call"
+                  ]
+                }
+              ]
+            },
+            "title": {
+              "description": "The list title.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "selectedFile": {
+              "description": "The name of the file the user tapped last. Bind it to a data path and read that path from the `onTapItem` action's context. The component writes the value the user chooses back to this property, so bind it to a data path if you need to read the result.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "onTapItem": {
+              "description": "Fired when the user taps a file, after `selectedFile` is written.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            }
+          },
+          "required": [
+            "component",
+            "items"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "CustomButton": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "CustomButton"
+              ]
+            },
+            "label": {
+              "description": "The button text.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "color": {
+              "description": "The background color in hex format, e.g. '#6366F1'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "onPressed": {
+              "description": "Fired when the user presses the button.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            }
+          },
+          "required": [
+            "component",
+            "label",
+            "onPressed"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "MetricChartWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "MetricChartWidget"
+              ]
+            },
+            "title": {
+              "description": "The chart title.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "value": {
+              "description": "The progress, from 0 to 1. Values above 1 are read as percentages.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicNumber"
+            },
+            "legendLabel": {
+              "description": "The legend shown next to the value.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "colorHex": {
+              "description": "The chart color in hex format, e.g. '#6366F1'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            }
+          },
+          "required": [
+            "component",
+            "title",
+            "value"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "PriorityPillWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "PriorityPillWidget"
+              ]
+            },
+            "priority": {
+              "description": "The priority level: 'high', 'medium' or 'low'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "label": {
+              "description": "Custom text for the pill. Defaults to the priority.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            }
+          },
+          "required": [
+            "component",
+            "priority"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ProductCardWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "ProductCardWidget"
+              ]
+            },
+            "title": {
+              "description": "The product name.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "price": {
+              "description": "The formatted price, including the currency, e.g. '\\$299.99'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "imageUrl": {
+              "description": "URL of the product image.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "description": {
+              "description": "A short product description.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "rating": {
+              "description": "The rating, from 0 to 5.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicNumber"
+            },
+            "onTapProduct": {
+              "description": "Fired when the user taps the card.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            },
+            "onBuy": {
+              "description": "Fired when the user taps the buy button.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            }
+          },
+          "required": [
+            "component",
+            "title",
+            "price"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "QuickRepliesWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "QuickRepliesWidget"
+              ]
+            },
+            "replies": {
+              "description": "The suggestions to show as chips.",
+              "oneOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "A suggestion chip.",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "description": "The visible chip text."
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "The value reported when the chip is tapped. Defaults to [label]."
+                      }
+                    },
+                    "required": [
+                      "label"
+                    ]
+                  }
+                },
+                {
+                  "type": "object",
+                  "description": "A path to a list.",
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "description": "A relative or absolute path in the data model."
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "call": {
+                      "type": "string",
+                      "description": "The name of the function to call."
+                    },
+                    "args": {
+                      "type": "object",
+                      "description": "Arguments to pass to the function.",
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "call"
+                  ]
+                }
+              ]
+            },
+            "title": {
+              "description": "Optional heading above the chips.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "selectedReply": {
+              "description": "The value of the reply the user tapped last. Bind it to a data path and read that path from the `onTapReply` action's context. The component writes the value the user chooses back to this property, so bind it to a data path if you need to read the result.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "onTapReply": {
+              "description": "Fired when the user taps a chip, after `selectedReply` is written.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            }
+          },
+          "required": [
+            "component",
+            "replies"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "SingleAttachmentWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "SingleAttachmentWidget"
+              ]
+            },
+            "name": {
+              "description": "The file name, including its extension.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "type": {
+              "description": "The file type: 'pdf', 'image', 'document', 'spreadsheet', 'audio', 'video', 'archive', 'folder' or 'file'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "size": {
+              "description": "The human-readable file size, e.g. '2.4 MB'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "status": {
+              "description": "The download state: 'ready', 'downloading', 'pending', 'downloaded' or 'failed'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "onTap": {
+              "description": "Fired when the user taps the card.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            },
+            "onAction": {
+              "description": "Fired when the user taps the download button.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            }
+          },
+          "required": [
+            "component",
+            "name"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "StatsWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "StatsWidget"
+              ]
+            },
+            "totalTasks": {
+              "description": "The total number of tasks.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicNumber"
+            },
+            "completedTasks": {
+              "description": "How many of the tasks are done.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicNumber"
+            }
+          },
+          "required": [
+            "component",
+            "totalTasks",
+            "completedTasks"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "TaskItemWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "TaskItemWidget"
+              ]
+            },
+            "title": {
+              "description": "The task title.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "isCompleted": {
+              "description": "Whether the task is checked as done.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicBoolean"
+            },
+            "priority": {
+              "description": "The task priority: 'high', 'medium' or 'low'.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "onToggle": {
+              "description": "Fired when the user taps the checkbox.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            }
+          },
+          "required": [
+            "component",
+            "title",
+            "isCompleted",
+            "priority",
+            "onToggle"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "TimelineWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "TimelineWidget"
+              ]
+            },
+            "events": {
+              "description": "The entries, oldest first.",
+              "oneOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "An entry of a timeline.",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "What happened."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "More detail about the entry."
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "description": "When it happened, as display text, e.g. 'Monday' or '10:30'."
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "The entry state: 'completed', 'active' or 'pending'."
+                      }
+                    },
+                    "required": [
+                      "title"
+                    ]
+                  }
+                },
+                {
+                  "type": "object",
+                  "description": "A path to a list.",
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "description": "A relative or absolute path in the data model."
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "call": {
+                      "type": "string",
+                      "description": "The name of the function to call."
+                    },
+                    "args": {
+                      "type": "object",
+                      "description": "Arguments to pass to the function.",
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "call"
+                  ]
+                }
+              ]
+            },
+            "title": {
+              "description": "The timeline title.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "selectedEvent": {
+              "description": "The title of the entry the user tapped last. Bind it to a data path and read that path from the `onTapEvent` action's context. The component writes the value the user chooses back to this property, so bind it to a data path if you need to read the result.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "onTapEvent": {
+              "description": "Fired when the user taps an entry, after `selectedEvent` is written.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/Action"
+            }
+          },
+          "required": [
+            "component",
+            "events"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "UserCardWidget": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "$ref": "#/$defs/CatalogComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "enum": [
+                "UserCardWidget"
+              ]
+            },
+            "name": {
+              "description": "The person's full name.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "role": {
+              "description": "The person's role or job title.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            },
+            "isActive": {
+              "description": "Whether the person is currently online.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicBoolean"
+            },
+            "avatarUrl": {
+              "description": "URL of the avatar image. Initials are shown when absent.",
+              "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
+            }
+          },
+          "required": [
+            "component",
+            "name",
+            "role"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  },
+  "$defs": {
+    "CatalogComponentCommon": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "A unique identifier for this component instance within the surface. This ID is used to refer to the component in layout children arrays or event handlers."
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "theme": {
+      "type": "object",
+      "properties": {
+        "primaryColor": {
+          "type": "string",
+          "description": "The primary brand color used for highlights (e.g., primary buttons, active borders). Renderers may generate variants of this color for different contexts. Format: Hexadecimal code (e.g., '#00BFFF').",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "iconUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL for an image that identifies the agent or tool associated with the surface."
+        },
+        "agentDisplayName": {
+          "type": "string",
+          "description": "Text to be displayed next to the surface to identify the agent or tool that created it."
+        }
+      },
+      "additionalProperties": true
+    },
+    "anyComponent": {
+      "oneOf": [
+        {
+          "$ref": "#/components/AlertBannerWidget"
+        },
+        {
+          "$ref": "#/components/AttachmentListWidget"
+        },
+        {
+          "$ref": "#/components/CustomButton"
+        },
+        {
+          "$ref": "#/components/MetricChartWidget"
+        },
+        {
+          "$ref": "#/components/PriorityPillWidget"
+        },
+        {
+          "$ref": "#/components/ProductCardWidget"
+        },
+        {
+          "$ref": "#/components/QuickRepliesWidget"
+        },
+        {
+          "$ref": "#/components/SingleAttachmentWidget"
+        },
+        {
+          "$ref": "#/components/StatsWidget"
+        },
+        {
+          "$ref": "#/components/TaskItemWidget"
+        },
+        {
+          "$ref": "#/components/TimelineWidget"
+        },
+        {
+          "$ref": "#/components/UserCardWidget"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "component"
+      }
+    },
+    "anyFunction": {
+      "not": {}
+    }
+  }
+}

@@ -141,18 +141,18 @@ packages:
     dependency: transitive
     description:
       name: build
-      sha256: "50df3d1558953a0d936401c1687cc41dbc039f9132f538c7bcb2aac2a580ae7f"
+      sha256: "8a5c5761af8e31748bba3c82f68925ace40f3225c3eea25be9beb57eca7cd7a8"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "4.0.11"
   build_config:
     dependency: transitive
     description:
       name: build_config
-      sha256: "4703a785fbc3c266c5c7518589d0863f6a05078ee33f7ca5aa4b87a56f1cedd2"
+      sha256: d466ed2dc9c6cd1d169948879b84ee061eb5e22c64a7c6089879c6296d272a8d
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "1.3.3"
   build_daemon:
     dependency: transitive
     description:
@@ -165,10 +165,10 @@ packages:
     dependency: transitive
     description:
       name: build_runner
-      sha256: "96b9da39a3a8d4365aa1ca6f7655437d80f514ba13d4c21d8408cc8aacb94681"
+      sha256: "6feadd32d90a68253c1f7b4fcff76adb4b41ad32a53f8bad835dc65f01ac9dc5"
       url: "https://pub.dev"
     source: hosted
-    version: "2.17.1"
+    version: "2.16.2"
   built_collection:
     dependency: transitive
     description:
@@ -525,6 +525,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.10.4"
+  genui_gen:
+    dependency: transitive
+    description:
+      name: genui_gen
+      sha256: "0250a6c8d7afcdeaa1da1906eea9433588ab1eed3c7ce8eb0fbe0c7d3ca65ed3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.1"
+  genui_gen_builder:
+    dependency: transitive
+    description:
+      name: genui_gen_builder
+      sha256: "83cc81c3510f606d8edbda6a648812c322080c9fcb2c05b20c451964c2d826d2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.13.0"
   glob:
     dependency: transitive
     description:

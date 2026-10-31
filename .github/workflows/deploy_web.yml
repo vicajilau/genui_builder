@@ -4,9 +4,9 @@ on:
     branches:
       - main
     paths:
-      - 'example/lib/**'
-      - 'example/web/**'
-      - 'example/pubspec.yaml'
+      - 'app/lib/**'
+      - 'app/web/**'
+      - 'app/pubspec.yaml'
       - 'packages/**'
       - 'pubspec.yaml'
       - '.github/workflows/deploy_web.yml'
@@ -46,7 +46,7 @@ jobs:
 
       - name: Build web
         run: flutter build web --wasm --base-href /${{ github.event.repository.name }}/
-        working-directory: example
+        working-directory: app
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
@@ -54,7 +54,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: "./example/build/web"
+          path: "./app/build/web"
           include-hidden-files: true
 
       - name: Deploy to GitHub Pages
