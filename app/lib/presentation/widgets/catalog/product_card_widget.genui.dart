@@ -22,8 +22,7 @@ final CatalogItem productCardWidgetCatalogItem = CatalogItem(
       'title': A2uiSchemas.stringReference(description: 'The product name.'),
       'price': A2uiSchemas.stringReference(
         description:
-            'The formatted price, including the currency, e.g. '
-            '\'\\\$299.99\'.',
+            'The formatted price, including the currency, e.g. \'\$299.99\'.',
       ),
       'imageUrl': A2uiSchemas.stringReference(
         description: 'URL of the product image.',

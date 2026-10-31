@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:genui/genui.dart';
+import 'package:genui_gen/genui_gen.dart' show genUiCatalogJson;
 
 import 'genui_catalog.g.dart';
 
@@ -30,6 +31,50 @@ abstract final class PlaygroundComponents {
   static const userCard = 'UserCardWidget';
 }
 
+/// A complete, valid A2UI message, used as the example in prompts.
+const Map<String, Object?> playgroundExampleMessage = {
+  'version': 'v0.9',
+  'updateComponents': {
+    'surfaceId': 'composed_surface',
+    'components': [
+      {
+        'id': 'root',
+        'component': 'Column',
+        'children': ['title', 'task_1', 'task_2', 'done_button'],
+      },
+      {'id': 'title', 'component': 'Text', 'text': 'Today'},
+      {
+        'id': 'task_1',
+        'component': PlaygroundComponents.taskItem,
+        'title': 'Review the design',
+        'isCompleted': false,
+        'priority': 'high',
+        'onToggle': {
+          'event': {'name': 'onToggle'},
+        },
+      },
+      {
+        'id': 'task_2',
+        'component': PlaygroundComponents.taskItem,
+        'title': 'Write the release notes',
+        'isCompleted': true,
+        'priority': 'low',
+        'onToggle': {
+          'event': {'name': 'onToggle'},
+        },
+      },
+      {
+        'id': 'done_button',
+        'component': PlaygroundComponents.customButton,
+        'label': 'Mark all as done',
+        'onPressed': {
+          'event': {'name': 'onPressed'},
+        },
+      },
+    ],
+  },
+};
+
 /// The JSON schema of each of the playground's own components, by name.
 Map<String, Map<String, dynamic>> get playgroundSchemas => {
   for (final item in genUiCatalogItems)
@@ -48,4 +93,69 @@ String get playgroundComponentsPromptDescription {
     }
   }
   return buffer.toString();
+}
+
+/// A short description of the playground's own components for small models:
+/// one line per property with its type, whether it is required and what it
+/// is for, without the full A2UI schemas.
+String get playgroundComponentsCompactDescription {
+  final components =
+      genUiCatalogJson(genUiCatalog)['components']! as Map<String, Object?>;
+  final buffer = StringBuffer();
+  final schemas = playgroundSchemas;
+  for (final MapEntry(key: name, value: component) in components.entries) {
+    final parts = (component! as Map<String, Object?>)['allOf']! as List;
+    final schema = parts.last as Map<String, Object?>;
+    final properties = schema['properties']! as Map<String, Object?>;
+    final required = {...(schema['required'] as List? ?? const [])};
+    buffer.writeln('- $name: ${schemas[name]?['description'] ?? ''}'.trim());
+    for (final MapEntry(key: property, value: definition)
+        in properties.entries) {
+      if (property == 'component') continue;
+      final definitionMap = definition! as Map<String, Object?>;
+      final type = _compactType(definitionMap);
+      final flag = required.contains(property) ? ', required' : '';
+      final description = definitionMap['description'];
+      buffer.writeln(
+        '    $property ($type$flag)'
+        '${description == null ? '' : ': $description'}',
+      );
+    }
+  }
+  return buffer.toString();
+}
+
+/// The type of a property as a model would write it, e.g. `string` or
+/// `list of {label: string, value?: string}`.
+String _compactType(Map<String, Object?> definition) {
+  final ref = definition[r'$ref'];
+  if (ref is String) {
+    return switch (ref.split('/').last) {
+      'DynamicString' => 'string',
+      'DynamicNumber' => 'number',
+      'DynamicBoolean' => 'boolean',
+      'Action' => 'action',
+      final other => other,
+    };
+  }
+  // Data-bound properties list the literal shape first, then the binding and
+  // function call alternatives.
+  final oneOf = definition['oneOf'];
+  final literal = oneOf is List
+      ? oneOf.first as Map<String, Object?>
+      : definition;
+  if (literal['type'] == 'array') {
+    return 'list of ${_compactType(literal['items']! as Map<String, Object?>)}';
+  }
+  if (literal['type'] == 'object' && literal['properties'] is Map) {
+    final properties = literal['properties']! as Map<String, Object?>;
+    final required = {...(literal['required'] as List? ?? const [])};
+    final fields = [
+      for (final MapEntry(key: field, value: fieldSchema) in properties.entries)
+        '$field${required.contains(field) ? '' : '?'}: '
+            '${_compactType(fieldSchema! as Map<String, Object?>)}',
+    ];
+    return '{${fields.join(', ')}}';
+  }
+  return literal['type']?.toString() ?? 'value';
 }

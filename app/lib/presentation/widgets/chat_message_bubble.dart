@@ -3,6 +3,7 @@ import 'package:genui/genui.dart';
 import '../../data/models/chat_timeline_item.dart';
 import '../../l10n/app_localizations.dart';
 import 'chat_ui_action_delegate.dart';
+import 'invalid_ui_json_card.dart';
 
 /// A widget that renders a single item in the chat timeline, styled as either
 /// a user speech bubble, an AI assistant text bubble, or a custom GenUI Surface.
@@ -137,13 +138,25 @@ class ChatMessageBubble extends StatelessWidget {
                 ),
               ),
             ),
-            child: Text(
-              item.text ?? '',
-              style: const TextStyle(
-                color: Color(0xFFE2E8F0), // Slate 200
-                fontSize: 14,
-                height: 1.4,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final segment in splitReply(item.text ?? ''))
+                  switch (segment) {
+                    TextSegment(:final text) => Text(
+                      text,
+                      style: const TextStyle(
+                        color: Color(0xFFE2E8F0), // Slate 200
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                    ),
+                    JsonBlockSegment(:final json) => InvalidUiJsonCard(
+                      json: json,
+                    ),
+                  },
+              ],
             ),
           ),
         );

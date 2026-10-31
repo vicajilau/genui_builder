@@ -685,4 +685,7 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get localModelLoading =>
       'Cargando modelo… La primera respuesta puede tardar.';
+
+  @override
+  String get invalidUiJsonTitle => 'El modelo devolvió JSON de UI no válido';
 }
