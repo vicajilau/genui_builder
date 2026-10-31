@@ -14,7 +14,7 @@ class ProductCardWidget extends StatelessWidget {
   /// The product name.
   final String title;
 
-  /// The formatted price, including the currency, e.g. '\$299.99'.
+  /// The formatted price, including the currency, e.g. '$299.99'.
   final String price;
 
   /// URL of the product image.

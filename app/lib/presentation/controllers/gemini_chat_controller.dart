@@ -93,7 +93,7 @@ class GeminiChatController extends ChangeNotifier {
         _chatService = LocalGemmaChatService(
           modelSource: _settingsService.localModelPath,
           temperature: _settingsService.localTemperature,
-          systemInstruction: _buildSystemInstruction(),
+          systemInstruction: _buildSystemInstruction(compact: true),
         );
         break;
       case ChatMode.serverpod:
@@ -278,7 +278,11 @@ class GeminiChatController extends ChangeNotifier {
     }
   }
 
-  String _buildSystemInstruction() {
+  /// Builds the system instruction for the active persona.
+  ///
+  /// [compact] swaps the full A2UI schemas for a short component reference and
+  /// a single complete example, which small on-device models follow better.
+  String _buildSystemInstruction({bool compact = false}) {
     final capabilities = A2UiClientCapabilities.fromCatalogs([
       playgroundCatalog,
     ]);
@@ -331,6 +335,8 @@ You must respond in the system's language ($systemLanguage) or match the languag
 You are a GenUI assistant that helps users manage their task board and team.
 ''';
     }
+
+    if (compact) return _compactSystemInstruction(roleDescription);
 
     return '''
 $roleDescription
@@ -400,6 +406,31 @@ $schemasDesc
 
 Always follow these rules strictly.
 ''';
+  }
+
+  String _compactSystemInstruction(String roleDescription) {
+    return '''
+$roleDescription
+You answer with one short sentence followed by ONE A2UI message that renders widgets.
+
+### FORMAT
+Put the A2UI message inside a ```json code block. It must be valid JSON: double quotes, a comma between every property and between every list item, no comments, no trailing commas.
+
+### RULES
+1. "version" is always "v0.9" and "surfaceId" is always "composed_surface".
+2. Every component is an object with a unique "id" and a "component" type. Its properties go next to them in the same object.
+3. The first component has id "root" and type "Column". Its "children" lists the ids (not the types) of the other components, in display order.
+4. Only use the component types listed under COMPONENTS, plus "Text" (property "text") for plain text.
+5. An "action" property looks like {"event": {"name": "<property name>"}}, for example "onPressed": {"event": {"name": "onPressed"}}.
+
+### EXAMPLE
+Here are your tasks for today.
+```json
+${const JsonEncoder.withIndent('  ').convert(playgroundExampleMessage)}
+```
+
+### COMPONENTS
+$playgroundComponentsCompactDescription''';
   }
 
   void _seedInitialMessage() {

@@ -293,7 +293,7 @@
               "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
             },
             "price": {
-              "description": "The formatted price, including the currency, e.g. '\\$299.99'.",
+              "description": "The formatted price, including the currency, e.g. '$299.99'.",
               "$ref": "https://a2ui.org/specification/v0_9/common_types.json#/$defs/DynamicString"
             },
             "imageUrl": {

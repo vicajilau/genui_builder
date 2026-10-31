@@ -205,5 +205,6 @@
   "statsProgressStatus": "Estado de progreso",
   "statsCompletedCount": "{completed}/{total} completadas",
   "localModelDownloading": "Descargando modelo… {percent} %",
-  "localModelLoading": "Cargando modelo… La primera respuesta puede tardar."
+  "localModelLoading": "Cargando modelo… La primera respuesta puede tardar.",
+  "invalidUiJsonTitle": "El modelo devolvió JSON de UI no válido"
 }

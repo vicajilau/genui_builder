@@ -678,4 +678,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get localModelLoading =>
       'Loading model… The first answer can take a while.';
+
+  @override
+  String get invalidUiJsonTitle =>
+      'The model returned UI JSON that isn\'t valid';
 }

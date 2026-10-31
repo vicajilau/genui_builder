@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:genui/genui.dart';
 import 'package:genui_playground/catalog.dart';
+import 'package:genui_playground/presentation/widgets/catalog/custom_button.dart';
+import 'package:genui_playground/presentation/widgets/catalog/task_item_widget.dart';
 import 'package:genui_playground/presentation/widgets/interactive_surface.dart';
 
 /// Renders [component] as the only child of a root column and returns the
@@ -92,5 +94,32 @@ void main() {
 
     expect(actions.single['name'], 'onPressed');
     expect(actions.single['context'], {'label': 'Pay invoice'});
+  });
+
+  testWidgets('the prompt example renders with the playground catalog', (
+    tester,
+  ) async {
+    final message =
+        playgroundExampleMessage['updateComponents']! as Map<String, Object?>;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: InteractiveSurface(
+            catalog: playgroundCatalog,
+            components: [
+              for (final component in message['components']! as List)
+                Component.fromJson(component as Map<String, Object?>),
+            ],
+            onEvent: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Today'), findsOneWidget);
+    expect(find.byType(TaskItemWidget), findsNWidgets(2));
+    expect(find.byType(CustomButton), findsOneWidget);
   });
 }

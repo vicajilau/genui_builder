@@ -1333,6 +1333,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading model… The first answer can take a while.'**
   String get localModelLoading;
+
+  /// Title of the card shown when the model returns JSON that cannot be rendered
+  ///
+  /// In en, this message translates to:
+  /// **'The model returned UI JSON that isn\'t valid'**
+  String get invalidUiJsonTitle;
 }
 
 class _AppLocalizationsDelegate
