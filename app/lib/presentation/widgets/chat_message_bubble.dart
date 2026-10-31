@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:genui/genui.dart';
 import '../../data/models/chat_timeline_item.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/surface_echo.dart';
 import 'chat_ui_action_delegate.dart';
 import 'invalid_ui_json_card.dart';
 
@@ -11,10 +12,15 @@ class ChatMessageBubble extends StatelessWidget {
   final ChatTimelineItem item;
   final SurfaceController controller;
 
+  /// The assistant text this item follows, if any. A surface that only
+  /// repeats it is hidden.
+  final String? replyText;
+
   const ChatMessageBubble({
     super.key,
     required this.item,
     required this.controller,
+    this.replyText,
   });
 
   @override
@@ -56,63 +62,75 @@ class ChatMessageBubble extends StatelessWidget {
       );
     } else {
       if (item.surfaceId != null) {
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E293B), // Slate 800
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0x3306B6D4),
-            ), // Subtle Cyan Border
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1A000000),
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  color: const Color(0xFF0F172A), // Slate 900
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.auto_awesome_rounded,
-                        size: 14,
-                        color: Color(0xFF06B6D4),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        AppLocalizations.of(
-                          context,
-                        )!.dynamicUiSurface(item.surfaceId ?? ''),
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF06B6D4),
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Surface(
-                    surfaceContext: controller.contextFor(item.surfaceId!),
-                    actionDelegate: ChatUiActionDelegate(controller),
-                  ),
+        final surface = controller.contextFor(item.surfaceId!);
+        return ValueListenableBuilder<SurfaceDefinition?>(
+          valueListenable: surface.definition,
+          builder: (context, definition, child) {
+            final replyText = this.replyText;
+            final isEcho =
+                definition != null &&
+                replyText != null &&
+                isEchoOfReply(definition, replyText);
+            return isEcho ? const SizedBox.shrink() : child!;
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B), // Slate 800
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0x3306B6D4),
+              ), // Subtle Cyan Border
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x1A000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
                 ),
               ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    color: const Color(0xFF0F172A), // Slate 900
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 14,
+                          color: Color(0xFF06B6D4),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.dynamicUiSurface(item.surfaceId ?? ''),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF06B6D4),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Surface(
+                      surfaceContext: surface,
+                      actionDelegate: ChatUiActionDelegate(controller),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
