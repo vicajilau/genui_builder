@@ -9,3 +9,6 @@ build/
 # Package lockfiles are not used: the workspace shares the root pubspec.lock,
 # which is committed so that every checkout resolves the same versions.
 /*/**/pubspec.lock
+
+# LLVM coverage profiles written when running native builds
+*.profraw
