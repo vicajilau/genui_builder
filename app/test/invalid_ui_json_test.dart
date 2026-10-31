@@ -47,8 +47,27 @@ void main() {
     final json = (splitReply(_invalidReply)[1] as JsonBlockSegment).json;
 
     // The second component starts without a comma after the first one.
-    expect(describeJsonError(json), endsWith('(line 11, column 7)'));
-    expect(describeJsonError('{"valid": true}'), isNull);
+    final error = findJsonError(json)!;
+    expect(error.line, 11);
+    expect(error.column, 7);
+    expect(error.lineText, '      {');
+    expect(findJsonError('{"valid": true}'), isNull);
+  });
+
+  test('reports a trailing comma at the closing brace', () {
+    const json = '{\n  "id": "root",\n}';
+
+    final error = findJsonError(json)!;
+    expect(error.line, 3);
+    expect(error.column, 1);
+    expect(error.lineText, '}');
+  });
+
+  test('reports a missing closing brace at the end of the input', () {
+    final error = findJsonError('{"id": "root"')!;
+
+    expect(error.line, 1);
+    expect(error.column, 14);
   });
 
   testWidgets('a reply with invalid JSON shows the text and an error card', (
@@ -80,6 +99,8 @@ void main() {
       find.text("The model returned UI JSON that isn't valid"),
       findsOneWidget,
     );
+    // The offending line is shown with a caret under the column.
+    expect(find.text('      {\n      ^'), findsOneWidget);
     // The JSON stays collapsed until the card is expanded.
     expect(find.byType(SelectableText), findsNothing);
 

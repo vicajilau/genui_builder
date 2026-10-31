@@ -39,19 +39,48 @@ List<ReplySegment> splitReply(String text) {
   return segments;
 }
 
-/// Describes why [json] does not parse, e.g. `Unexpected character (line 12,
-/// column 9)`, or returns `null` when it does.
-String? describeJsonError(String json) {
+/// Where and why a JSON text fails to parse.
+final class JsonError {
+  const JsonError({
+    required this.message,
+    required this.line,
+    required this.column,
+    required this.lineText,
+  });
+
+  final String message;
+
+  /// The 1-based line and column of the offending character.
+  final int line;
+  final int column;
+
+  /// The whole line the error is on.
+  final String lineText;
+
+  @override
+  String toString() => '$message (line $line, column $column)';
+}
+
+/// Finds why [json] does not parse, or returns `null` when it does.
+JsonError? findJsonError(String json) {
   try {
     jsonDecode(json);
     return null;
   } on FormatException catch (e) {
-    final offset = e.offset;
-    if (offset == null || offset > json.length) return e.message;
-    final before = json.substring(0, offset);
-    final line = '\n'.allMatches(before).length + 1;
-    final column = offset - before.lastIndexOf('\n');
-    return '${e.message} (line $line, column $column)';
+    // At the end of the input, e.g. a missing closing brace, the offset
+    // points just past the last character.
+    final offset = (e.offset ?? json.length).clamp(0, json.length);
+    final lineStart = json.lastIndexOf('\n', offset - 1) + 1;
+    final lineEnd = json.indexOf('\n', offset);
+    return JsonError(
+      message: e.message,
+      line: '\n'.allMatches(json.substring(0, offset)).length + 1,
+      column: offset - lineStart + 1,
+      lineText: json.substring(
+        lineStart,
+        lineEnd == -1 ? json.length : lineEnd,
+      ),
+    );
   }
 }
 
@@ -65,7 +94,7 @@ class InvalidUiJsonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final error = describeJsonError(json);
+    final error = findJsonError(json);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -100,9 +129,27 @@ class InvalidUiJsonCard extends StatelessWidget {
             ),
             subtitle: error == null
                 ? null
-                : Text(
-                    error,
-                    style: const TextStyle(fontSize: 12, color: Colors.white70),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        error.toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      // The offending line, with a caret under the column.
+                      Text(
+                        '${error.lineText}\n${' ' * (error.column - 1)}^',
+                        style: const TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 12,
+                          color: Color(0xFFFCD34D),
+                        ),
+                      ),
+                    ],
                   ),
             children: [
               Container(
