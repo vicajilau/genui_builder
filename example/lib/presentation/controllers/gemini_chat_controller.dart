@@ -3,6 +3,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:a2ui_core/a2ui_core.dart'
+    show
+        A2uiMessage,
+        CreateSurfaceMessage,
+        DeleteSurfaceMessage,
+        UpdateComponentsMessage,
+        UpdateDataModelMessage;
 import 'package:genui/genui.dart';
 import '../../data/models/chat_timeline_item.dart';
 import '../../data/services/chat_service.dart';
@@ -396,10 +403,10 @@ Always follow these rules strictly.
   void _setupIncomingMessagesSub(Transport transport) {
     _incomingMessagesSub?.cancel();
     _incomingMessagesSub = transport.incomingMessages.listen((message) {
-      if (message is UpdateComponents) {
+      if (message is UpdateComponentsMessage) {
         if (!_aiController.registry.hasSurface(message.surfaceId)) {
           _aiController.handleMessage(
-            CreateSurface(
+            CreateSurfaceMessage(
               surfaceId: message.surfaceId,
               catalogId: 'inline_catalog',
             ),
@@ -473,38 +480,42 @@ class UniqueSurfaceTransport implements Transport {
       final suffix = '_${_getSurfaceCounter()}';
 
       switch (message) {
-        case CreateSurface(
+        case CreateSurfaceMessage(
           :final surfaceId,
           :final catalogId,
           :final theme,
           :final sendDataModel,
         ):
           if (surfaceId == 'composed_surface') {
-            return CreateSurface(
+            return CreateSurfaceMessage(
               surfaceId: '$surfaceId$suffix',
               catalogId: catalogId,
               theme: theme,
               sendDataModel: sendDataModel,
             );
           }
-        case UpdateComponents(:final surfaceId, :final components):
+        case UpdateComponentsMessage(:final surfaceId, :final components):
           if (surfaceId == 'composed_surface') {
-            return UpdateComponents(
+            return UpdateComponentsMessage(
               surfaceId: '$surfaceId$suffix',
               components: components,
             );
           }
-        case UpdateDataModel(:final surfaceId, :final path, :final value):
+        case UpdateDataModelMessage(
+          :final surfaceId,
+          :final path,
+          :final value,
+        ):
           if (surfaceId == 'composed_surface') {
-            return UpdateDataModel(
+            return UpdateDataModelMessage(
               surfaceId: '$surfaceId$suffix',
               path: path,
               value: value,
             );
           }
-        case DeleteSurface(:final surfaceId):
+        case DeleteSurfaceMessage(:final surfaceId):
           if (surfaceId == 'composed_surface') {
-            return DeleteSurface(surfaceId: '$surfaceId$suffix');
+            return DeleteSurfaceMessage(surfaceId: '$surfaceId$suffix');
           }
       }
       return message;

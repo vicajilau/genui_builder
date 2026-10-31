@@ -2,6 +2,7 @@
 // ignore_for_file: type=lint, unused_import
 
 import 'dart:convert';
+
 import 'package:genui/genui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 

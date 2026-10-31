@@ -10,9 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-abstract class ChatMessagePart implements _i1.SerializableModel {
+abstract class ChatMessagePart
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ChatMessagePart._({required this.text});
 
   factory ChatMessagePart({required String text}) = _ChatMessagePartImpl;
@@ -25,7 +26,7 @@ abstract class ChatMessagePart implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ChatMessagePart]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ChatMessagePart copyWith({String? text});
   @override
   Map<String, dynamic> toJson() {
@@ -36,8 +37,16 @@ abstract class ChatMessagePart implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ChatMessagePart',
+      'text': text,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -46,7 +55,7 @@ class _ChatMessagePartImpl extends ChatMessagePart {
 
   /// Returns a shallow copy of this [ChatMessagePart]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ChatMessagePart copyWith({String? text}) {
     return ChatMessagePart(text: text ?? this.text);

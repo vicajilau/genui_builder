@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
+import 'package:a2ui_core/a2ui_core.dart' show UpdateComponentsMessage;
 import 'package:genui/genui.dart';
 
 /// A custom action delegate that intercepts A2UI interface events
@@ -105,9 +106,9 @@ class ChatUiActionDelegate implements ActionDelegate {
       }
 
       controller.handleMessage(
-        UpdateComponents(
+        UpdateComponentsMessage(
           surfaceId: surfaceId,
-          components: finalUpdatedComponents,
+          components: finalUpdatedComponents.map((c) => c.toJson()).toList(),
         ),
       );
 
@@ -187,14 +188,14 @@ class ChatUiActionDelegate implements ActionDelegate {
       }).toList();
 
       controller.handleMessage(
-        UpdateComponents(
+        UpdateComponentsMessage(
           surfaceId: surfaceId,
           components: [
             Component(
               id: component.id,
               type: component.type,
               properties: {...component.properties, 'events': updatedEvents},
-            ),
+            ).toJson(),
           ],
         ),
       );
@@ -273,7 +274,10 @@ class ChatUiActionDelegate implements ActionDelegate {
       }
 
       controller.handleMessage(
-        UpdateComponents(surfaceId: surfaceId, components: updatedComponents),
+        UpdateComponentsMessage(
+          surfaceId: surfaceId,
+          components: updatedComponents.map((c) => c.toJson()).toList(),
+        ),
       );
 
       return true;

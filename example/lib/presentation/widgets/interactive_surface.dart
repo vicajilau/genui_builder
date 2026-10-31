@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:a2ui_core/a2ui_core.dart'
+    show CreateSurfaceMessage, UpdateComponentsMessage;
 import 'package:genui/genui.dart';
 
 /// A helper widget that encapsulates all the boilerplate code required to run
@@ -41,7 +43,7 @@ class _InteractiveSurfaceState extends State<InteractiveSurface> {
 
     // Initialize the surface in the controller
     _controller.handleMessage(
-      CreateSurface(
+      CreateSurfaceMessage(
         surfaceId: widget.surfaceId,
         catalogId: widget.catalogId,
         sendDataModel: false,
@@ -50,9 +52,9 @@ class _InteractiveSurfaceState extends State<InteractiveSurface> {
 
     // Populate with the initial components
     _controller.handleMessage(
-      UpdateComponents(
+      UpdateComponentsMessage(
         surfaceId: widget.surfaceId,
-        components: widget.components,
+        components: widget.components.map((c) => c.toJson()).toList(),
       ),
     );
 
@@ -71,9 +73,9 @@ class _InteractiveSurfaceState extends State<InteractiveSurface> {
     if (widget.components != oldWidget.components ||
         widget.surfaceId != oldWidget.surfaceId) {
       _controller.handleMessage(
-        UpdateComponents(
+        UpdateComponentsMessage(
           surfaceId: widget.surfaceId,
-          components: widget.components,
+          components: widget.components.map((c) => c.toJson()).toList(),
         ),
       );
     }

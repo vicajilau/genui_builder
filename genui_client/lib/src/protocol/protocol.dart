@@ -8,18 +8,19 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'chat/chat_message_history.dart' as _i2;
-import 'chat/chat_message_part.dart' as _i3;
 import 'package:genui_client/src/protocol/chat/chat_message_history.dart'
-    as _i4;
+    as _irz96e13;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'chat/chat_message_history.dart' as _ide8bzxf;
+import 'chat/chat_message_part.dart' as _ihyde1km;
 export 'chat/chat_message_history.dart';
 export 'chat/chat_message_part.dart';
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _isc.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -46,34 +47,36 @@ class Protocol extends _i1.SerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _isc.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i2.ChatMessageHistory) {
-      return _i2.ChatMessageHistory.fromJson(data) as T;
+    if (t == _ide8bzxf.ChatMessageHistory) {
+      return _ide8bzxf.ChatMessageHistory.fromJson(data) as T;
     }
-    if (t == _i3.ChatMessagePart) {
-      return _i3.ChatMessagePart.fromJson(data) as T;
+    if (t == _ihyde1km.ChatMessagePart) {
+      return _ihyde1km.ChatMessagePart.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.ChatMessageHistory?>()) {
-      return (data != null ? _i2.ChatMessageHistory.fromJson(data) : null) as T;
+    if (t == _isc.getType<_ide8bzxf.ChatMessageHistory?>()) {
+      return (data != null ? _ide8bzxf.ChatMessageHistory.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i3.ChatMessagePart?>()) {
-      return (data != null ? _i3.ChatMessagePart.fromJson(data) : null) as T;
+    if (t == _isc.getType<_ihyde1km.ChatMessagePart?>()) {
+      return (data != null ? _ihyde1km.ChatMessagePart.fromJson(data) : null)
+          as T;
     }
-    if (t == List<_i3.ChatMessagePart>) {
+    if (t == List<_ihyde1km.ChatMessagePart>) {
       return (data as List)
-              .map((e) => deserialize<_i3.ChatMessagePart>(e))
+              .map((e) => deserialize<_ihyde1km.ChatMessagePart>(e))
               .toList()
           as T;
     }
-    if (t == List<_i4.ChatMessageHistory>) {
+    if (t == List<_irz96e13.ChatMessageHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i4.ChatMessageHistory>(e))
+              .map((e) => deserialize<_irz96e13.ChatMessageHistory>(e))
               .toList()
           as T;
     }
@@ -82,8 +85,8 @@ class Protocol extends _i1.SerializationManager {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.ChatMessageHistory => 'ChatMessageHistory',
-      _i3.ChatMessagePart => 'ChatMessagePart',
+      _ide8bzxf.ChatMessageHistory => 'ChatMessageHistory',
+      _ihyde1km.ChatMessagePart => 'ChatMessagePart',
       _ => null,
     };
   }
@@ -98,9 +101,9 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.ChatMessageHistory():
+      case _ide8bzxf.ChatMessageHistory():
         return 'ChatMessageHistory';
-      case _i3.ChatMessagePart():
+      case _ihyde1km.ChatMessagePart():
         return 'ChatMessagePart';
     }
     return null;
@@ -113,10 +116,10 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'ChatMessageHistory') {
-      return deserialize<_i2.ChatMessageHistory>(data['data']);
+      return deserialize<_ide8bzxf.ChatMessageHistory>(data['data']);
     }
     if (dataClassName == 'ChatMessagePart') {
-      return deserialize<_i3.ChatMessagePart>(data['data']);
+      return deserialize<_ihyde1km.ChatMessagePart>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
