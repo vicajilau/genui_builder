@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:genui_client/genui_client.dart';
 import 'chat_service.dart';
 
@@ -46,6 +48,9 @@ class ServerpodChatService implements ChatService {
       apiKey: _getApiKey(),
     );
   }
+
+  @override
+  ValueListenable<ChatServiceStatus?> get status => idleChatServiceStatus;
 
   @override
   void dispose() {

@@ -932,5 +932,19 @@
         "example": "5"
       }
     }
+  },
+  "localModelDownloading": "Downloading model… {percent}%",
+  "@localModelDownloading": {
+    "description": "Progress of the local model download",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "42"
+      }
+    }
+  },
+  "localModelLoading": "Loading model… The first answer can take a while.",
+  "@localModelLoading": {
+    "description": "Shown while the local model loads and reads the prompt"
   }
 }

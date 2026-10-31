@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'chat_service.dart';
 import 'gemini_service.dart';
 
@@ -51,6 +53,9 @@ class GeminiServerlessChatService implements ChatService {
       history: fullHistory,
     );
   }
+
+  @override
+  ValueListenable<ChatServiceStatus?> get status => idleChatServiceStatus;
 
   @override
   void dispose() {

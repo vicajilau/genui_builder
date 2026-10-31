@@ -676,4 +676,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String statsCompletedCount(int completed, int total) {
     return '$completed/$total completadas';
   }
+
+  @override
+  String localModelDownloading(int percent) {
+    return 'Descargando modelo… $percent %';
+  }
+
+  @override
+  String get localModelLoading =>
+      'Cargando modelo… La primera respuesta puede tardar.';
 }

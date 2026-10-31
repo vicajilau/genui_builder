@@ -203,5 +203,7 @@
   "buyLabel": "Comprar",
   "productBadgeLabel": "PRODUCTO",
   "statsProgressStatus": "Estado de progreso",
-  "statsCompletedCount": "{completed}/{total} completadas"
+  "statsCompletedCount": "{completed}/{total} completadas",
+  "localModelDownloading": "Descargando modelo… {percent} %",
+  "localModelLoading": "Cargando modelo… La primera respuesta puede tardar."
 }

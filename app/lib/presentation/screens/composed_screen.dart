@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../data/services/chat_service.dart';
 import '../../data/services/connection_settings_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../data/services/gemini_service.dart';
@@ -255,21 +256,30 @@ class _ComposedScreenState extends State<ComposedScreen>
               ),
             ),
             if (controller.isWaiting)
-              const Padding(
-                padding: EdgeInsets.all(12.0),
-                child: Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Color(0xFF6366F1),
+              switch (controller.serviceStatus) {
+                final DownloadingModel status => _ServiceStatusBar(
+                  label: l10n.localModelDownloading(status.percent),
+                  progress: status.percent / 100,
+                ),
+                LoadingModel() => _ServiceStatusBar(
+                  label: l10n.localModelLoading,
+                ),
+                null => const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF6366F1),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              },
             if (controller.hasError)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
@@ -540,5 +550,44 @@ class _KeepAliveWrapperState extends State<KeepAliveWrapper>
   Widget build(BuildContext context) {
     super.build(context);
     return widget.child;
+  }
+}
+
+/// A labelled progress bar for a chat service that is still preparing.
+///
+/// Shows determinate progress when [progress] is set, and an indeterminate bar
+/// otherwise.
+class _ServiceStatusBar extends StatelessWidget {
+  const _ServiceStatusBar({required this.label, this.progress});
+
+  final String label;
+  final double? progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 13, color: Colors.white70),
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 6,
+              backgroundColor: Colors.white10,
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFF6366F1),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
